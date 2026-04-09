@@ -1,114 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:customview="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- Header -->
     <LinearLayout
         android:id="@+id/linearHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/imgWarning"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:src="@drawable/warning"
+            app:tint="#FFFFFF"
+            android:contentDescription="warning icon" />
+
+        <TextView
+            android:id="@+id/txtWarning"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/imgWarning"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:tint="#FFFFFF"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/warning"/>
-
-            <TextView
-                android:id="@+id/txtWarning"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp"
-                android:textSize="20sp"
-                android:textColor="#FFFFFF"
-                android:text="Warning!"/>
-
-        </LinearLayout>
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:text="Warning!"
+            android:textSize="20sp"
+            android:textColor="#FFFFFF" />
 
     </LinearLayout>
 
+    <!-- Message -->
     <TextView
         android:id="@+id/txtMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorBlack"
-        android:textSize="18sp"
+        android:layout_below="@id/linearHeader"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         android:text="Are you sure want to delete now?"
-        android:layout_below="@+id/linearHeader" />
+        android:textSize="18sp"
+        android:textColor="@color/colorBlack" />
 
-
-    <RelativeLayout
+    <!-- Footer -->
+    <LinearLayout
         android:id="@+id/relativeFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txtMessage"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
+        android:layout_below="@id/txtMessage"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:gravity="end"
+        android:orientation="horizontal">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/txtCancel"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:orientation="horizontal">
+            android:layout_height="44dp"
+            android:layout_marginEnd="8dp"
+            android:minWidth="80dp"
+            android:gravity="center"
+            android:background="@drawable/transparent_background_selector"
+            android:text="NO"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/colorPrimary" />
 
-            <TextView
-                android:id="@+id/txtCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="8dp"
-                android:layout_toLeftOf="@+id/txtAccept"
-                android:background="@drawable/transparent_background_selector"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:minWidth="80dp"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:gravity="center"
-                android:text="NO"
-                android:textColor="@color/colorPrimary" />
+        <TextView
+            android:id="@+id/txtAccept"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:minWidth="80dp"
+            android:gravity="center"
+            android:background="@drawable/transparent_background_selector"
+            android:text="YES"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/colorPrimary" />
 
-            <TextView
-                android:id="@+id/txtAccept"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/transparent_background_selector"
-                android:minWidth="80dp"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:gravity="center"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:text="YES"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>

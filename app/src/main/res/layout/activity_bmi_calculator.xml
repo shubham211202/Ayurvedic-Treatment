@@ -1,144 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        style="@style/custom_AppTheme.Toolbar">
+        android:background="@color/colorPrimary"
+        android:title="BMI Calculator"
+        android:titleTextColor="@android:color/white" />
 
-        <TextView
-            android:id="@+id/txtToolbarTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            style="@style/TextAppearance.Widget.Event.Toolbar.Title"
-            android:textSize="20sp"
-            android:visibility="gone"
-            android:text="Contact List"
-            android:textColor="#FFFFFF" />
-
-    </android.support.v7.widget.Toolbar>
-
+    <!-- Main Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorGrayLight"
+        android:orientation="vertical"
         android:padding="16dp"
-        android:orientation="vertical">
+        android:background="@color/colorGrayLight">
 
+        <!-- Weight -->
         <TextView
             android:id="@+id/txtWeight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Weight (kg)"
             android:textSize="16sp"
-            android:textColor="@color/colorBlack"
-            android:text="Weight in Kilogram"/>
+            android:textColor="@color/colorBlack" />
 
         <EditText
+            android:id="@+id/edtWeight"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="4dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:inputType="numberDecimal"
-            android:imeOptions="actionNext"
-            android:hint="Enter your weight"
-            android:textColor="@color/colorBlack"
+            android:layout_height="48dp"
+            android:layout_marginTop="6dp"
             android:background="@drawable/round_white_background"
-            android:id="@+id/edtWeight" />
+            android:padding="10dp"
+            android:hint="Enter weight"
+            android:textColor="@color/colorBlack"
+            android:inputType="numberDecimal"
+            android:autofillHints="weight" />
 
+        <!-- Height Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="1">
+            android:layout_marginTop="16dp">
 
+            <!-- Feet -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.48"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/txtHeightFeet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:text="Height (Feet)"
                     android:textSize="16sp"
-                    android:layout_marginTop="16dp"
-                    android:text="Height in Feet"/>
+                    android:textColor="@color/colorBlack" />
 
                 <EditText
+                    android:id="@+id/edtHeightFeet"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="4dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:imeOptions="actionDone"
-                    android:inputType="numberDecimal"
-                    android:hint="Feet Portion"
-                    android:textColor="@color/colorBlack"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="6dp"
                     android:background="@drawable/round_white_background"
-                    android:id="@+id/edtHeightFeet" />
-
+                    android:padding="10dp"
+                    android:hint="Feet"
+                    android:textColor="@color/colorBlack"
+                    android:inputType="numberDecimal"
+                    android:autofillHints="none" />
             </LinearLayout>
 
+            <!-- Space -->
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="wrap_content" />
+
+            <!-- Inches -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.04"
-                android:orientation="horizontal">
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.48"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/txtHeightInch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:text="Height (Inch)"
                     android:textSize="16sp"
-                    android:layout_marginTop="16dp"
-                    android:text="Height in Inches"/>
+                    android:textColor="@color/colorBlack" />
 
                 <EditText
+                    android:id="@+id/edtHeightInch"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="4dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:imeOptions="actionDone"
-                    android:inputType="numberDecimal"
-                    android:hint="Inches Portion"
-                    android:textColor="@color/colorBlack"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="6dp"
                     android:background="@drawable/round_white_background"
-                    android:id="@+id/edtHeightInch" />
-
+                    android:padding="10dp"
+                    android:hint="Inch"
+                    android:textColor="@color/colorBlack"
+                    android:inputType="numberDecimal"
+                    android:autofillHints="none" />
             </LinearLayout>
 
         </LinearLayout>
 
+        <!-- Button -->
         <Button
+            android:id="@+id/btnCalculateBMI"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginTop="16dp"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp"
+            android:layout_marginTop="20dp"
+            android:text="Calculate BMI"
             android:textStyle="bold"
             android:textAllCaps="true"
-            android:background="@drawable/round_transparent_background_selector"
-            android:text="Calculate BMI"
-            android:id="@+id/btnCalculateBMI" />
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimary" />
 
     </LinearLayout>
 
