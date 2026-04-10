@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.applicationslab.ayurvedictreatment.R;
 import com.applicationslab.ayurvedictreatment.activity.*;
 import com.applicationslab.ayurvedictreatment.datamodel.OptionsData;
-import com.applicationslab.ayurvedictreatment.utility.PreferenceUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.auth.FirebaseAuth; // ✅ ADDED
 
 import java.util.ArrayList;
 
@@ -87,11 +87,8 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.MyViewHo
                     intent = new Intent(mContext, SymptomListActivity.class);
                     break;
 
-                case 1: // Diagnosis
-                    PreferenceUtil pref1 = new PreferenceUtil(mContext);
-                    String user1 = pref1.getUserName();
-
-                    if (user1 == null || user1.isEmpty()) { // ✅ FIX
+                case 1: // ✅ Diagnosis (FIXED)
+                    if (FirebaseAuth.getInstance().getCurrentUser() == null) {
                         intent = new Intent(mContext, LoginActivity.class);
                         intent.putExtra("target_job", "diagnosis");
                     } else {
@@ -99,11 +96,8 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.MyViewHo
                     }
                     break;
 
-                case 2: // Prescription
-                    PreferenceUtil pref2 = new PreferenceUtil(mContext);
-                    String user2 = pref2.getUserName();
-
-                    if (user2 == null || user2.isEmpty()) { // ✅ FIX
+                case 2: // ✅ Prescription (FIXED)
+                    if (FirebaseAuth.getInstance().getCurrentUser() == null) {
                         intent = new Intent(mContext, LoginActivity.class);
                         intent.putExtra("target_job", "prescription");
                     } else {

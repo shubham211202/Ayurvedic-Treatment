@@ -16,8 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.applicationslab.ayurvedictreatment.R;
 import com.applicationslab.ayurvedictreatment.adapter.OptionsAdapter;
 import com.applicationslab.ayurvedictreatment.datamodel.OptionsData;
+import com.google.firebase.FirebaseApp;   // ✅ IMPORTANT IMPORT
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,10 +32,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // ✅ Safe Firebase Initialization (Prevents crash)
+        List<FirebaseApp> firebaseApps = FirebaseApp.getApps(this);
+        if (firebaseApps == null || firebaseApps.isEmpty()) {
+            FirebaseApp.initializeApp(this);
+        }
+
         initView();
         initData();
         setAdapter();
-        handleBackPressed();   // ✅ modern back handling
+        handleBackPressed();
     }
 
     private void handleBackPressed() {

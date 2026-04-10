@@ -22,7 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.applicationslab.ayurvedictreatment.R;
-import com.applicationslab.ayurvedictreatment.utility.PreferenceUtil;
 import com.applicationslab.ayurvedictreatment.utility.UtilityMethod;
 import com.applicationslab.ayurvedictreatment.widget.CustomToast;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,61 +35,26 @@ public class RegisterActivity extends AppCompatActivity
 
     String targetJob = "";
 
-    private FirebaseAuth mAuth; // ✅ Firebase
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mAuth = FirebaseAuth.getInstance(); // ✅ init Firebase
+        mAuth = FirebaseAuth.getInstance();
 
         initData();
         initView();
         setUIClickHandler();
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View v = getCurrentFocus();
-            if (v instanceof EditText) {
-                Rect outRect = new Rect();
-                v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
-                    v.clearFocus();
-                    InputMethodManager imm =
-                            (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    }
-                }
-            }
-        }
-        return super.dispatchTouchEvent(event);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            startActivity(new Intent(this, LoginActivity.class)
-                    .putExtra("target_job", targetJob));
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        startActivity(new Intent(this, LoginActivity.class)
-                .putExtra("target_job", targetJob));
-        finish();
-    }
-
+    // ✅ SAFE INTENT HANDLING
     private void initData() {
         if (getIntent() != null && getIntent().getExtras() != null) {
             targetJob = getIntent().getExtras().getString("target_job", "");
+        } else {
+            targetJob = "";
         }
     }
 
@@ -147,6 +111,22 @@ public class RegisterActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if (v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+                    v.clearFocus();
+                    hideKeyboard();
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
+    }
+
     // ✅ FIREBASE REGISTER
     private void registerWithFirebase() {
 
@@ -166,23 +146,28 @@ public class RegisterActivity extends AppCompatActivity
                         new CustomToast(this, "Registration successful", "", true);
                         makeRegister();
                     } else {
-                        new CustomToast(this, "Registration failed: " +
-                                task.getException().getMessage(), "", false);
+                        new CustomToast(this,
+                                task.getException() != null
+                                        ? task.getException().getMessage()
+                                        : "Registration failed",
+                                "", false);
                     }
                 });
     }
 
+    // ✅ CLEAN NAVIGATION (NO PreferenceUtil)
     private void makeRegister() {
-        PreferenceUtil pref = new PreferenceUtil(this);
-        pref.setUserName(edtUserName.getText().toString().trim());
-        pref.setEmail(edtEmail.getText().toString().trim());
-        pref.setPassword(edtPassword.getText().toString().trim());
 
         if ("diagnosis".equalsIgnoreCase(targetJob)) {
             startActivity(new Intent(this, DiagnosisActivity.class));
-        } else {
+
+        } else if ("prescription".equalsIgnoreCase(targetJob)) {
             startActivity(new Intent(this, PrescriptionRequestActivity.class));
+
+        } else {
+            startActivity(new Intent(this, MainActivity.class));
         }
+
         finish();
     }
 
@@ -223,7 +208,7 @@ public class RegisterActivity extends AppCompatActivity
         if (isInputValid()) {
             UtilityMethod util = new UtilityMethod();
             if (util.isConnectedToInternet(this)) {
-                registerWithFirebase(); // ✅ changed
+                registerWithFirebase();
             } else {
                 new CustomToast(this, "No internet", "", false);
             }
@@ -245,5 +230,23 @@ public class RegisterActivity extends AppCompatActivity
         if (v.getId() == R.id.btnSubmit) {
             onRegisterClicked();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            startActivity(new Intent(this, LoginActivity.class)
+                    .putExtra("target_job", targetJob));
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, LoginActivity.class)
+                .putExtra("target_job", targetJob));
+        finish();
     }
 }
