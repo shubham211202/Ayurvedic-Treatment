@@ -44,7 +44,7 @@ public class DiagnosisActivity extends AppCompatActivity implements View.OnClick
 
         initView();
         setUIClickHandler();
-        initData();              // ✅ FIXED
+        initData();
         setSpinnerAdapter();
     }
 
@@ -67,7 +67,6 @@ public class DiagnosisActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void initView() {
-
         Toolbar toolBar = findViewById(R.id.toolBar);
         setSupportActionBar(toolBar);
 
@@ -115,29 +114,117 @@ public class DiagnosisActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
-    // ✅ FIXED METHOD (IMPORTANT)
     private void initData() {
-        primaries = new ArrayList<>();
-        symptoms = new ArrayList<>();
+        primaries.clear();
+        symptoms.clear();
 
         DiagnosisData d;
 
+        // Appendicitis
         d = new DiagnosisData();
         d.setDisease("Appendicitis");
         d.setPrimarySymptom("Lower abdomen pain");
         ArrayList<String> temp = new ArrayList<>();
-        temp.add("Right side abdomen pain");
+        temp.add("Abdomen pain in right side");
         temp.add("Vomiting");
-        temp.add("Fever");
+        temp.add("Fever 100-102");
+        temp.add("Acute lower abdomen pain");
+        temp.add("Muscle stiffness in abdomen");
         d.setSecondarySymptoms(temp);
         symptoms.add(d);
 
+        // Asthma
         d = new DiagnosisData();
         d.setDisease("Asthma");
-        d.setPrimarySymptom("Breathing problem");
+        d.setPrimarySymptom("Gasping of breath");
         temp = new ArrayList<>();
         temp.add("Coughing");
         temp.add("Chest tightness");
+        temp.add("Vomiting");
+        temp.add("Abdominal pain");
+        temp.add("Breathing difficulty");
+        d.setSecondarySymptoms(temp);
+        symptoms.add(d);
+
+        // Diabetes
+        d = new DiagnosisData();
+        d.setDisease("Diabetes");
+        d.setPrimarySymptom("Frequent urination");
+        temp = new ArrayList<>();
+        temp.add("Pale urine");
+        temp.add("Increased urine quantity");
+        temp.add("Thirst");
+        temp.add("Weight loss");
+        temp.add("Constipation");
+        d.setSecondarySymptoms(temp);
+        symptoms.add(d);
+
+        // High BP
+        d = new DiagnosisData();
+        d.setDisease("High Blood Pressure");
+        d.setPrimarySymptom("Head & neck pain");
+        temp = new ArrayList<>();
+        temp.add("High BP level");
+        temp.add("Heart pain");
+        temp.add("Fatigue");
+        d.setSecondarySymptoms(temp);
+        symptoms.add(d);
+
+        // Malaria
+        d = new DiagnosisData();
+        d.setDisease("Malaria");
+        d.setPrimarySymptom("High fever");
+        temp = new ArrayList<>();
+        temp.add("Headache");
+        temp.add("Shivering");
+        temp.add("Temperature fluctuation");
+        d.setSecondarySymptoms(temp);
+        symptoms.add(d);
+
+        // Mumps
+        d = new DiagnosisData();
+        d.setDisease("Mumps");
+        d.setPrimarySymptom("Swelling and pain");
+        temp = new ArrayList<>();
+        temp.add("Ear pain");
+        temp.add("Fever");
+        temp.add("Vomiting");
+        temp.add("Meningitis");
+        d.setSecondarySymptoms(temp);
+        symptoms.add(d);
+
+        // Jaundice
+        d = new DiagnosisData();
+        d.setDisease("Jaundice");
+        d.setPrimarySymptom("Yellow eyes");
+        temp = new ArrayList<>();
+        temp.add("Weakness");
+        temp.add("Fever");
+        temp.add("Yellow skin");
+        temp.add("Liver pain");
+        d.setSecondarySymptoms(temp);
+        symptoms.add(d);
+
+        // Tuberculosis
+        d = new DiagnosisData();
+        d.setDisease("Tuberculosis");
+        d.setPrimarySymptom("Persistent cough");
+        temp = new ArrayList<>();
+        temp.add("Shoulder pain");
+        temp.add("Chest pain");
+        temp.add("Blood cough");
+        temp.add("Indigestion");
+        d.setSecondarySymptoms(temp);
+        symptoms.add(d);
+
+        // Measles
+        d = new DiagnosisData();
+        d.setDisease("Measles");
+        d.setPrimarySymptom("Skin rashes");
+        temp = new ArrayList<>();
+        temp.add("Fever");
+        temp.add("Watery eyes");
+        temp.add("Dry cough");
         d.setSecondarySymptoms(temp);
         symptoms.add(d);
 
@@ -188,45 +275,58 @@ public class DiagnosisActivity extends AppCompatActivity implements View.OnClick
 
     private void showLogoutDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View view = inflater.inflate(R.layout.dialog_warning, null);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_warning, null);
 
         builder.setView(view);
-        final AlertDialog dialog = builder.create();
+        AlertDialog dialog = builder.create();
         dialog.show();
 
-        TextView txtMessage = view.findViewById(R.id.txtMessage);
-        TextView txtAccept = view.findViewById(R.id.txtAccept);
-        TextView txtCancel = view.findViewById(R.id.txtCancel);
+        view.findViewById(R.id.txtCancel).setOnClickListener(v -> dialog.dismiss());
 
-        txtMessage.setText("Are you sure you want to logout?");
-
-        txtCancel.setOnClickListener(v -> dialog.dismiss());
-
-        txtAccept.setOnClickListener(v -> {
+        view.findViewById(R.id.txtAccept).setOnClickListener(v -> {
             dialog.dismiss();
             makeLogout();
         });
     }
 
     private void makeLogout() {
-        PreferenceUtil pref = new PreferenceUtil(this);
-        pref.clearPreference();
-
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+        new PreferenceUtil(this).clearPreference();
+        startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
 
     @Override
     public void onClick(View v) {
+
         if (spinnerSymptom1.getSelectedItemPosition() == 0) {
             new CustomToast(this, "Please select some symptoms", "", false);
-        } else {
-            String disease = symptoms.get(spinnerSymptom1.getSelectedItemPosition() - 1).getDisease();
-            Intent intent = new Intent(this, DiagnosisResultActivity.class);
-            intent.putExtra("disease", "You may be affected by " + disease);
-            startActivity(intent);
+            return;
         }
+
+        int count = 0;
+
+        if (spinnerSymptom2.getSelectedItemPosition() != 0) count++;
+
+        if (spinnerSymptom3.getSelectedItemPosition() != 0 &&
+                spinnerSymptom3.getSelectedItemPosition() != spinnerSymptom2.getSelectedItemPosition()) count++;
+
+        if (spinnerSymptom4.getSelectedItemPosition() != 0 &&
+                spinnerSymptom4.getSelectedItemPosition() != spinnerSymptom2.getSelectedItemPosition() &&
+                spinnerSymptom4.getSelectedItemPosition() != spinnerSymptom3.getSelectedItemPosition()) count++;
+
+        if (count == 0) {
+            new CustomToast(this, "Selected symptoms are not adequate", "", false);
+            return;
+        }
+
+        String disease = symptoms.get(spinnerSymptom1.getSelectedItemPosition() - 1).getDisease();
+
+        String text = (count == 1)
+                ? "You may be affected by " + disease
+                : "You are affected by " + disease;
+
+        Intent intent = new Intent(this, DiagnosisResultActivity.class);
+        intent.putExtra("disease", text);
+        startActivity(intent);
     }
 }
