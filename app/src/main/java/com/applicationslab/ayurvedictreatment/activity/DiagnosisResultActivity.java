@@ -1,29 +1,20 @@
 package com.applicationslab.ayurvedictreatment.activity;
 
-import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.applicationslab.ayurvedictreatment.R;
 import com.applicationslab.ayurvedictreatment.utility.PreferenceUtil;
-import com.applicationslab.ayurvedictreatment.utility.Urls;
-import com.applicationslab.ayurvedictreatment.utility.UtilityMethod;
 import com.applicationslab.ayurvedictreatment.widget.CustomToast;
-
-import org.json.JSONObject;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,11 +27,14 @@ public class DiagnosisResultActivity extends AppCompatActivity implements View.O
     private Button btnSave;
 
     private String disease = "";
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diagnosis_result);
+
+        db = FirebaseFirestore.getInstance(); // ✅ Firebase init
 
         initView();
         setUIClickHandler();
@@ -89,54 +83,26 @@ public class DiagnosisResultActivity extends AppCompatActivity implements View.O
         return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     }
 
-    private void callAddDiseaseApi() {
+    // 🔥 FIREBASE SAVE FUNCTION
+    private void saveToFirebase() {
 
-        ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Please wait...");
-        dialog.setCancelable(false);
-        dialog.show();
+        Toast.makeText(this, "Saving...", Toast.LENGTH_SHORT).show(); // DEBUG
 
-        StringRequest request = new StringRequest(Request.Method.POST, Urls.URL_ADD_DISEASE,
+        PreferenceUtil pref = new PreferenceUtil(this);
 
-                response -> {
-                    dialog.dismiss();
-                    try {
-                        JSONObject json = new JSONObject(response);
-                        int success = json.getInt("success");
+        Map<String, Object> data = new HashMap<>();
+        data.put("username", pref.getUserName());
+        data.put("disease", disease);
+        data.put("date", getDate());
 
-                        if (success == 1) {
-                            new CustomToast(this, "Saved successfully", "", false);
-                            finish();
-                        } else {
-                            new CustomToast(this, "Save failed", "", false);
-                        }
-
-                    } catch (Exception e) {
-                        new CustomToast(this, "Error occurred", "", false);
-                    }
-                },
-
-                error -> {
-                    dialog.dismiss();
-                    new CustomToast(this, "Network error", "", false);
-                }
-
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                Map<String, String> params = new HashMap<>();
-
-                PreferenceUtil pref = new PreferenceUtil(DiagnosisResultActivity.this);
-                params.put("username", pref.getUserName());
-                params.put("date", getDate());
-                params.put("disease", disease);
-
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(this).add(request);
+        db.collection("prescriptions")
+                .add(data)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(this, "Saved Successfully ✅", Toast.LENGTH_LONG).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error ❌: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 
     @Override
@@ -144,13 +110,13 @@ public class DiagnosisResultActivity extends AppCompatActivity implements View.O
 
         if (v.getId() == R.id.btnSave) {
 
-            UtilityMethod util = new UtilityMethod();
 
-            if (util.isConnectedToInternet(this)) {
-                callAddDiseaseApi();
-            } else {
-                new CustomToast(this, "Internet required", "", false);
+            if (disease.isEmpty()) {
+                new CustomToast(this, "No diagnosis found", "", false);
+                return;
             }
+
+            saveToFirebase();
         }
     }
 }
