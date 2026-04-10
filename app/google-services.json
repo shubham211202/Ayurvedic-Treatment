@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "698335928664",
+    "project_id": "ayurvedictreatmentapp-7cbd1",
+    "storage_bucket": "ayurvedictreatmentapp-7cbd1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698335928664:android:745ee0f6a3c3192144c52d",
+        "android_client_info": {
+          "package_name": "com.applicationslab.ayurvedictreatment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzNBBn4z6jbt368GDSHwuh5YrPdWv5zPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

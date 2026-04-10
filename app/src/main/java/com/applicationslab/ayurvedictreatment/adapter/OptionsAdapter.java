@@ -77,7 +77,6 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.MyViewHo
         public void onClick(View v) {
 
             int pos = getAdapterPosition();
-
             if (pos == RecyclerView.NO_POSITION) return;
 
             Intent intent = null;
@@ -88,9 +87,11 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.MyViewHo
                     intent = new Intent(mContext, SymptomListActivity.class);
                     break;
 
-                case 1:
+                case 1: // Diagnosis
                     PreferenceUtil pref1 = new PreferenceUtil(mContext);
-                    if (pref1.getUserName().isEmpty()) {
+                    String user1 = pref1.getUserName();
+
+                    if (user1 == null || user1.isEmpty()) { // ✅ FIX
                         intent = new Intent(mContext, LoginActivity.class);
                         intent.putExtra("target_job", "diagnosis");
                     } else {
@@ -98,9 +99,11 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.MyViewHo
                     }
                     break;
 
-                case 2:
+                case 2: // Prescription
                     PreferenceUtil pref2 = new PreferenceUtil(mContext);
-                    if (pref2.getUserName().isEmpty()) {
+                    String user2 = pref2.getUserName();
+
+                    if (user2 == null || user2.isEmpty()) { // ✅ FIX
                         intent = new Intent(mContext, LoginActivity.class);
                         intent.putExtra("target_job", "prescription");
                     } else {

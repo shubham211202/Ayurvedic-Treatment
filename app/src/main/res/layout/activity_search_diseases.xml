@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -9,20 +10,7 @@
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        style="@style/custom_AppTheme.Toolbar">
-
-        <TextView
-            android:id="@+id/txtToolbarTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            style="@style/TextAppearance.Widget.Event.Toolbar.Title"
-            android:textSize="20sp"
-            android:visibility="gone"
-            android:text="Contact List"
-            android:textColor="#FFFFFF" />
-
-    </androidx.appcompat.widget.Toolbar>
+        style="@style/custom_AppTheme.Toolbar" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,7 +18,7 @@
         android:background="@color/colorGrayLight"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.Toolbar
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewDiseases"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

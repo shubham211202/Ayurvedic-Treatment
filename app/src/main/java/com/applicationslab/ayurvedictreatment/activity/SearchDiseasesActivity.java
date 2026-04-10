@@ -50,7 +50,6 @@ public class SearchDiseasesActivity extends AppCompatActivity {
         }
 
         recyclerViewDiseases = findViewById(R.id.recyclerViewDiseases);
-
         recyclerViewDiseases.setLayoutManager(new LinearLayoutManager(this));
     }
 
@@ -64,7 +63,7 @@ public class SearchDiseasesActivity extends AppCompatActivity {
         diseaseSearchData = new ArrayList<>();
 
         addDisease("Acute Fever", 14);
-        addDisease("Bronchitis", 14); // fixed spelling
+        addDisease("Bronchitis", 14);
         addDisease("Asthma", 14);
         addDisease("Kidney Stone", 14);
         addDisease("Children Aliment", 14);
@@ -84,7 +83,6 @@ public class SearchDiseasesActivity extends AppCompatActivity {
         addDisease("Fungal infection", 3);
     }
 
-    // Helper methods (clean code)
     private void addDisease(String name, int pos) {
         DiseaseSearchData data = new DiseaseSearchData();
         data.setDiseaseName(name);
@@ -101,7 +99,9 @@ public class SearchDiseasesActivity extends AppCompatActivity {
         data.setDiseaseName(name);
 
         ArrayList<Integer> positions = new ArrayList<>();
-        for (int p : posArray) positions.add(p);
+        for (int p : posArray) {
+            positions.add(p);
+        }
 
         data.setPlantPositions(positions);
         diseaseSearchData.add(data);

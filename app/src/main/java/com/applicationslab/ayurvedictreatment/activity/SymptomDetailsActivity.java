@@ -46,7 +46,7 @@ public class SymptomDetailsActivity extends AppCompatActivity {
         setSupportActionBar(toolBar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(title);
+            getSupportActionBar().setTitle(title != null ? title : "Details");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -74,13 +74,19 @@ public class SymptomDetailsActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        try {
-            title = getIntent().getStringExtra("title");
-            symptom = getIntent().getStringExtra("symptom");
-            treatment = getIntent().getStringExtra("treatment");
-            dose = getIntent().getStringExtra("dose");
-            suggestion = getIntent().getStringExtra("suggestion");
-        } catch (Exception ignored) {}
+
+        title = getIntent().getStringExtra("title");
+        symptom = getIntent().getStringExtra("symptom");
+        treatment = getIntent().getStringExtra("treatment");
+        dose = getIntent().getStringExtra("dose");
+        suggestion = getIntent().getStringExtra("suggestion");
+
+        // ✅ NULL SAFETY (IMPORTANT)
+        if (title == null) title = "";
+        if (symptom == null) symptom = "";
+        if (treatment == null) treatment = "";
+        if (dose == null) dose = "";
+        if (suggestion == null) suggestion = "";
     }
 
     private void setContentData() {

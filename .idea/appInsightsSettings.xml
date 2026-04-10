@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.applicationslab.ayurvedictreatment" />
+                  <option name="mobileSdkAppId" value="1:698335928664:android:745ee0f6a3c3192144c52d" />
+                  <option name="projectId" value="ayurvedictreatmentapp-7cbd1" />
+                  <option name="projectNumber" value="698335928664" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

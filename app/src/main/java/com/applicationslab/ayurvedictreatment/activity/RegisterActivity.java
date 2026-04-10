@@ -6,7 +6,8 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,22 +21,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.applicationslab.ayurvedictreatment.R;
 import com.applicationslab.ayurvedictreatment.utility.PreferenceUtil;
-import com.applicationslab.ayurvedictreatment.utility.Urls;
 import com.applicationslab.ayurvedictreatment.utility.UtilityMethod;
 import com.applicationslab.ayurvedictreatment.widget.CustomToast;
-
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class RegisterActivity extends AppCompatActivity
         implements TextView.OnEditorActionListener, View.OnClickListener {
@@ -46,10 +36,14 @@ public class RegisterActivity extends AppCompatActivity
 
     String targetJob = "";
 
+    private FirebaseAuth mAuth; // ✅ Firebase
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        mAuth = FirebaseAuth.getInstance(); // ✅ init Firebase
 
         initData();
         initView();
@@ -67,7 +61,9 @@ public class RegisterActivity extends AppCompatActivity
                     v.clearFocus();
                     InputMethodManager imm =
                             (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    }
                 }
             }
         }
@@ -145,51 +141,35 @@ public class RegisterActivity extends AppCompatActivity
         if (v != null) {
             InputMethodManager imm =
                     (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
         }
     }
 
-    private void callRegistrationApi() {
+    // ✅ FIREBASE REGISTER
+    private void registerWithFirebase() {
+
+        String email = edtEmail.getText().toString().trim();
+        String password = edtPassword.getText().toString().trim();
 
         ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Please wait...");
+        dialog.setMessage("Registering...");
         dialog.setCancelable(false);
         dialog.show();
 
-        StringRequest request = new StringRequest(Request.Method.POST, Urls.URL_REGISTER,
-                response -> {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
                     dialog.dismiss();
-                    try {
-                        JSONObject json = new JSONObject(response);
-                        int success = json.getInt("success");
 
-                        if (success == 1) {
-                            new CustomToast(this, "Registration successful", "", true);
-                            makeRegister();
-                        } else {
-                            new CustomToast(this, "Registration failed", "", false);
-                        }
-
-                    } catch (Exception e) {
-                        new CustomToast(this, "Error: " + e, "", false);
+                    if (task.isSuccessful()) {
+                        new CustomToast(this, "Registration successful", "", true);
+                        makeRegister();
+                    } else {
+                        new CustomToast(this, "Registration failed: " +
+                                task.getException().getMessage(), "", false);
                     }
-                },
-                error -> {
-                    dialog.dismiss();
-                    new CustomToast(this, "Error: " + error, "", false);
-                }) {
-
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("username", edtUserName.getText().toString().trim());
-                params.put("email", edtEmail.getText().toString().trim());
-                params.put("password", edtPassword.getText().toString().trim());
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(this).add(request);
+                });
     }
 
     private void makeRegister() {
@@ -208,24 +188,24 @@ public class RegisterActivity extends AppCompatActivity
 
     private boolean isInputValid() {
 
-        if (edtUserName.getText().toString().trim().isEmpty()) {
+        if (TextUtils.isEmpty(edtUserName.getText().toString().trim())) {
             new CustomToast(this, "Enter username", "", false);
             return false;
         }
 
-        if (edtEmail.getText().toString().trim().isEmpty()) {
+        String email = edtEmail.getText().toString().trim();
+
+        if (TextUtils.isEmpty(email)) {
             new CustomToast(this, "Enter email", "", false);
             return false;
         }
 
-        UtilityMethod util = new UtilityMethod();
-
-        if (!util.isEmailValid(edtEmail.getText().toString().trim())) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             new CustomToast(this, "Invalid email", "", false);
             return false;
         }
 
-        if (edtPassword.getText().toString().trim().isEmpty()) {
+        if (TextUtils.isEmpty(edtPassword.getText().toString().trim())) {
             new CustomToast(this, "Enter password", "", false);
             return false;
         }
@@ -243,7 +223,7 @@ public class RegisterActivity extends AppCompatActivity
         if (isInputValid()) {
             UtilityMethod util = new UtilityMethod();
             if (util.isConnectedToInternet(this)) {
-                callRegistrationApi();
+                registerWithFirebase(); // ✅ changed
             } else {
                 new CustomToast(this, "No internet", "", false);
             }

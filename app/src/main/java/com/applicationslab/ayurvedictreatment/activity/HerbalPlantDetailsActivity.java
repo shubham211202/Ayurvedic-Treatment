@@ -15,15 +15,19 @@ import com.applicationslab.ayurvedictreatment.R;
 
 public class HerbalPlantDetailsActivity extends AppCompatActivity {
 
-    private TextView txtScientificLabel, txtDescriptionLabel, txtUsesLabel;
-    private TextView txtScientificName, txtDescription, txtUses;
-    private ImageView imgViewHerbalPlant;
+    TextView txtScientificLabel;
+    TextView txtDescriptionLabel;
+    TextView txtUsesLabel;
+    TextView txtScientificName;
+    TextView txtDescription;
+    TextView txtUses;
+    ImageView imgViewHerbalPlant;
 
-    private String title = "";
-    private String scientificName = "";
-    private String description = "";
-    private String uses = "";
-    private int imgId = R.drawable.herbal_plant;
+    String title = "";
+    String scientificName = "";
+    String description = "";
+    String uses = "";
+    int imgId = R.drawable.herbal_plant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +49,6 @@ public class HerbalPlantDetailsActivity extends AppCompatActivity {
     }
 
     private void initView() {
-
         Toolbar toolBar = findViewById(R.id.toolBar);
         setSupportActionBar(toolBar);
 
@@ -57,22 +60,19 @@ public class HerbalPlantDetailsActivity extends AppCompatActivity {
         txtScientificLabel = findViewById(R.id.txtScientificLabel);
         txtDescriptionLabel = findViewById(R.id.txtDescriptionLabel);
         txtUsesLabel = findViewById(R.id.txtUsesLabel);
-
         txtScientificName = findViewById(R.id.txtScientificName);
         txtDescription = findViewById(R.id.txtDescription);
         txtUses = findViewById(R.id.txtUses);
-
         imgViewHerbalPlant = findViewById(R.id.imgViewHerbalPlant);
 
-        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/OpenSansRegular.ttf");
+        Typeface tfRegular = Typeface.createFromAsset(getAssets(), "fonts/OpenSansRegular.ttf");
 
-        txtScientificName.setTypeface(tf, Typeface.ITALIC);
-        txtDescription.setTypeface(tf);
-        txtUses.setTypeface(tf);
-
-        txtScientificLabel.setTypeface(tf, Typeface.BOLD);
-        txtDescriptionLabel.setTypeface(tf, Typeface.BOLD);
-        txtUsesLabel.setTypeface(tf, Typeface.BOLD);
+        txtScientificName.setTypeface(tfRegular, Typeface.ITALIC);
+        txtDescription.setTypeface(tfRegular);
+        txtUses.setTypeface(tfRegular);
+        txtScientificLabel.setTypeface(tfRegular, Typeface.BOLD);
+        txtDescriptionLabel.setTypeface(tfRegular, Typeface.BOLD);
+        txtUsesLabel.setTypeface(tfRegular, Typeface.BOLD);
     }
 
     private void initData() {
@@ -80,24 +80,24 @@ public class HerbalPlantDetailsActivity extends AppCompatActivity {
             Intent intent = getIntent();
 
             if (intent != null && intent.getExtras() != null) {
-                title = intent.getExtras().getString("title", "");
-                scientificName = intent.getExtras().getString("scientific_name", "");
-                description = intent.getExtras().getString("description", "");
-                uses = intent.getExtras().getString("uses", "");
-                imgId = intent.getExtras().getInt("img_id", R.drawable.herbal_plant);
+                title = intent.getStringExtra("title");
+                scientificName = intent.getStringExtra("scientific_name");
+                description = intent.getStringExtra("description");
+                uses = intent.getStringExtra("uses");
+                imgId = intent.getIntExtra("img_id", R.drawable.herbal_plant);
             }
 
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private void setContentData() {
-
         txtDescription.setText(description);
         txtUses.setText(uses);
         imgViewHerbalPlant.setImageResource(imgId);
 
-        if (!scientificName.isEmpty()) {
+        if (scientificName != null && !scientificName.equalsIgnoreCase("")) {
             txtScientificName.setText(scientificName);
         } else {
             txtScientificLabel.setVisibility(View.GONE);

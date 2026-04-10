@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,20 +21,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.applicationslab.ayurvedictreatment.R;
 import com.applicationslab.ayurvedictreatment.utility.PreferenceUtil;
-import com.applicationslab.ayurvedictreatment.utility.Urls;
 import com.applicationslab.ayurvedictreatment.utility.UtilityMethod;
 import com.applicationslab.ayurvedictreatment.widget.CustomToast;
-
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity
         implements View.OnClickListener, TextView.OnEditorActionListener {
@@ -44,10 +36,14 @@ public class LoginActivity extends AppCompatActivity
 
     private String targetJob = "";
 
+    private FirebaseAuth mAuth; // ✅ Firebase
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        mAuth = FirebaseAuth.getInstance(); // ✅ init Firebase
 
         initData();
         initView();
@@ -141,46 +137,27 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
-    private void callLoginApi() {
+    // ✅ FIREBASE LOGIN
+    private void loginWithFirebase() {
+
+        String email = edtUserName.getText().toString().trim();
+        String password = edtPassword.getText().toString().trim();
 
         ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Please wait...");
+        dialog.setMessage("Logging in...");
         dialog.setCancelable(false);
         dialog.show();
 
-        StringRequest request = new StringRequest(Request.Method.POST, Urls.URL_LOGIN,
-                response -> {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
                     dialog.dismiss();
-                    try {
-                        JSONObject json = new JSONObject(response);
-                        int success = json.getInt("success");
 
-                        if (success == 1) {
-                            String email = json.getString("email");
-                            makeLogin(email);
-                        } else {
-                            new CustomToast(this, "User not found", "", false);
-                        }
-
-                    } catch (Exception e) {
-                        new CustomToast(this, "Something went wrong", "", false);
+                    if (task.isSuccessful()) {
+                        makeLogin(email);
+                    } else {
+                        new CustomToast(this, "Invalid email or password", "", false);
                     }
-                },
-                error -> {
-                    dialog.dismiss();
-                    new CustomToast(this, "Network error", "", false);
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("username", edtUserName.getText().toString().trim());
-                params.put("password", edtPassword.getText().toString().trim());
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(this).add(request);
+                });
     }
 
     private void makeLogin(String email) {
@@ -199,8 +176,16 @@ public class LoginActivity extends AppCompatActivity
     }
 
     private boolean isInputValid() {
-        if (TextUtils.isEmpty(edtUserName.getText().toString().trim())) {
-            new CustomToast(this, "Username required", "", false);
+
+        String email = edtUserName.getText().toString().trim();
+
+        if (TextUtils.isEmpty(email)) {
+            new CustomToast(this, "Email required", "", false);
+            return false;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            new CustomToast(this, "Enter valid email", "", false);
             return false;
         }
 
@@ -216,7 +201,7 @@ public class LoginActivity extends AppCompatActivity
         if (isInputValid()) {
             UtilityMethod util = new UtilityMethod();
             if (util.isConnectedToInternet(this)) {
-                callLoginApi();
+                loginWithFirebase(); // ✅ changed
             } else {
                 new CustomToast(this, "Internet required", "", false);
             }
