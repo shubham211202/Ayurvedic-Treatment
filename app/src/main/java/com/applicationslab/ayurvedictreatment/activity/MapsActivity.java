@@ -35,7 +35,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private static final int REQUEST_PERMISSION = 100;
 
-    String PLACES_API_KEY = "YOUR_PLACES_API_KEY";
+    String PLACES_API_KEY = "API Key Here";
 
     PlacesClient placesClient;
     PermissionHandler permission;

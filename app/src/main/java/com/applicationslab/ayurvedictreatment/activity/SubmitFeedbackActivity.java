@@ -1,6 +1,5 @@
 package com.applicationslab.ayurvedictreatment.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -16,18 +15,15 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.applicationslab.ayurvedictreatment.R;
-import com.applicationslab.ayurvedictreatment.utility.Urls;
 import com.applicationslab.ayurvedictreatment.utility.UtilityMethod;
 import com.applicationslab.ayurvedictreatment.widget.CustomToast;
 
-import org.json.JSONObject;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
+
+import com.google.android.material.snackbar.Snackbar;
+import android.graphics.Color;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,12 +34,16 @@ public class SubmitFeedbackActivity extends AppCompatActivity implements View.On
     EditText edtUserName, edtFeedback;
     Button btnSubmit;
 
+    FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submit_feedback);
 
         initView();
+        db = FirebaseFirestore.getInstance();
+
         btnSubmit.setOnClickListener(this);
     }
 
@@ -100,55 +100,13 @@ public class SubmitFeedbackActivity extends AppCompatActivity implements View.On
         btnSubmit.setTypeface(tf, Typeface.BOLD);
     }
 
-    private void callSubmitFeedbackApi() {
-
-        ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Please wait...");
-        dialog.setCancelable(false);
-        dialog.show();
-
-        StringRequest request = new StringRequest(Request.Method.POST, Urls.URL_GIVE_FEEDBACK,
-                response -> {
-                    dialog.dismiss();
-                    try {
-                        JSONObject json = new JSONObject(response);
-                        int success = json.getInt("success");
-
-                        if (success == 1) {
-                            edtUserName.setText("");
-                            edtFeedback.setText("");
-                            new CustomToast(this, "Feedback submitted successfully", "", false);
-                        } else {
-                            new CustomToast(this, "Submission failed", "", false);
-                        }
-                    } catch (Exception e) {
-                        new CustomToast(this, "Error occurred", "", false);
-                    }
-                },
-                error -> {
-                    dialog.dismiss();
-                    new CustomToast(this, "Network error", "", false);
-                }) {
-
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("username", edtUserName.getText().toString().trim());
-                params.put("comment", edtFeedback.getText().toString().trim());
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(this).add(request);
-    }
-
     private boolean isInputValid() {
         if (edtUserName.getText().toString().trim().isEmpty()) {
-            new CustomToast(this, "Enter username", "", false);
+            showErrorSnackbar("Enter username");
             return false;
         }
         if (edtFeedback.getText().toString().trim().isEmpty()) {
-            new CustomToast(this, "Enter feedback", "", false);
+            showErrorSnackbar("Enter feedback");
             return false;
         }
         return true;
@@ -157,13 +115,55 @@ public class SubmitFeedbackActivity extends AppCompatActivity implements View.On
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btnSubmit) {
+
             if (isInputValid()) {
+
                 if (new UtilityMethod().isConnectedToInternet(this)) {
-                    callSubmitFeedbackApi();
+
+                    Map<String, Object> feedback = new HashMap<>();
+                    feedback.put("name", edtUserName.getText().toString().trim());
+                    feedback.put("message", edtFeedback.getText().toString().trim());
+                    feedback.put("timestamp", FieldValue.serverTimestamp());
+
+                    db.collection("feedbacks")
+                            .add(feedback)
+                            .addOnSuccessListener(documentReference -> {
+
+                                edtUserName.setText("");
+                                edtFeedback.setText("");
+
+                                showSuccessSnackbar("✅ Feedback submitted successfully!");
+                            })
+                            .addOnFailureListener(e -> {
+                                showErrorSnackbar("❌ Failed: " + e.getMessage());
+                            });
+
                 } else {
-                    new CustomToast(this, "No internet", "", false);
+                    showErrorSnackbar("No internet connection");
                 }
             }
         }
+    }
+
+    // ✅ SUCCESS SNACKBAR
+    private void showSuccessSnackbar(String message) {
+        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),
+                message,
+                Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.parseColor("#4CAF50")); // Green
+        snackbar.setTextColor(Color.WHITE);
+        snackbar.show();
+    }
+
+    // ❌ ERROR SNACKBAR
+    private void showErrorSnackbar(String message) {
+        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),
+                message,
+                Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.parseColor("#F44336")); // Red
+        snackbar.setTextColor(Color.WHITE);
+        snackbar.show();
     }
 }

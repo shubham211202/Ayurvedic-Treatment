@@ -1,6 +1,5 @@
 package com.applicationslab.ayurvedictreatment.activity;
 
-import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -13,19 +12,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.applicationslab.ayurvedictreatment.R;
 import com.applicationslab.ayurvedictreatment.adapter.FeedbackAdapter;
 import com.applicationslab.ayurvedictreatment.datamodel.FeedbackData;
-import com.applicationslab.ayurvedictreatment.utility.Urls;
 import com.applicationslab.ayurvedictreatment.widget.CustomToast;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
@@ -38,12 +32,17 @@ public class ViewFeedbackActivity extends AppCompatActivity {
     FeedbackAdapter adapter;
     ArrayList<FeedbackData> feedbackDatas = new ArrayList<>();
 
+    FirebaseFirestore db; // 🔥 Firestore instance
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_feedback);
 
         initView();
+
+        db = FirebaseFirestore.getInstance(); // 🔥 Init Firestore
+
         initData();
     }
 
@@ -98,53 +97,34 @@ public class ViewFeedbackActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        callGettingFeedbackApi();
+        getFeedbackFromFirestore(); // 🔥 NEW METHOD
     }
 
-    private void callGettingFeedbackApi() {
-
-        ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Please wait...");
-        dialog.setCancelable(false);
-        dialog.show();
+    // 🔥 FIREBASE METHOD
+    private void getFeedbackFromFirestore() {
 
         feedbackDatas.clear();
 
-        StringRequest request = new StringRequest(Request.Method.POST, Urls.URL_GET_FEEDBACK,
-                response -> {
-                    dialog.dismiss();
-                    try {
-                        JSONObject json = new JSONObject(response);
-                        int success = json.getInt("success");
+        db.collection("feedbacks")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
 
-                        if (success == 1) {
-                            JSONArray array = json.getJSONArray("feedbacks");
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
 
-                            for (int i = 0; i < array.length(); i++) {
-                                JSONObject obj = array.getJSONObject(i);
+                        FeedbackData data = new FeedbackData();
 
-                                FeedbackData data = new FeedbackData();
-                                data.setName(obj.getString("username"));
-                                data.setDetails(obj.getString("comment"));
+                        data.setName(doc.getString("name"));
+                        data.setDetails(doc.getString("message"));
 
-                                feedbackDatas.add(data);
-                            }
-                        } else {
-                            new CustomToast(this, "No feedback found", "", false);
-                        }
-
-                    } catch (Exception e) {
-                        new CustomToast(this, "Parsing error", "", false);
+                        feedbackDatas.add(data);
                     }
 
                     setAdapter();
-                },
-                error -> {
-                    dialog.dismiss();
-                    new CustomToast(this, "Network error", "", false);
+                })
+                .addOnFailureListener(e -> {
+                    new CustomToast(this, "Error loading feedback", "", false);
                     setAdapter();
                 });
-
-        Volley.newRequestQueue(this).add(request);
     }
 }
