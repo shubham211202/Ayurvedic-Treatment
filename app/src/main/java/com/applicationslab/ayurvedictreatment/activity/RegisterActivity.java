@@ -25,17 +25,22 @@ import com.applicationslab.ayurvedictreatment.R;
 import com.applicationslab.ayurvedictreatment.utility.UtilityMethod;
 import com.applicationslab.ayurvedictreatment.widget.CustomToast;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity
         implements TextView.OnEditorActionListener, View.OnClickListener {
 
     TextView txtUserName, txtEmail, txtPassword, txtConfirmPass;
-    EditText edtUserName, edtEmail, edtPassword, edtConfirmPass;
+    EditText edtUserName, edtEmail, edtPassword, edtConfirmPass, edtMobile; // 🔥 ADDED
     Button btnSubmit;
 
     String targetJob = "";
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +48,13 @@ public class RegisterActivity extends AppCompatActivity
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         initData();
         initView();
         setUIClickHandler();
     }
 
-    // ✅ SAFE INTENT HANDLING
     private void initData() {
         if (getIntent() != null && getIntent().getExtras() != null) {
             targetJob = getIntent().getExtras().getString("target_job", "");
@@ -77,6 +82,7 @@ public class RegisterActivity extends AppCompatActivity
         edtEmail = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
         edtConfirmPass = findViewById(R.id.edtConfirmPass);
+        edtMobile = findViewById(R.id.edtMobile); // 🔥 ADDED
 
         btnSubmit = findViewById(R.id.btnSubmit);
 
@@ -91,6 +97,7 @@ public class RegisterActivity extends AppCompatActivity
         edtEmail.setTypeface(tf);
         edtPassword.setTypeface(tf);
         edtConfirmPass.setTypeface(tf);
+        edtMobile.setTypeface(tf); // 🔥 ADDED
 
         btnSubmit.setTypeface(tf, Typeface.BOLD);
     }
@@ -127,11 +134,13 @@ public class RegisterActivity extends AppCompatActivity
         return super.dispatchTouchEvent(event);
     }
 
-    // ✅ FIREBASE REGISTER
+    // 🔥 UPDATED FIREBASE REGISTER
     private void registerWithFirebase() {
 
         String email = edtEmail.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
+        String username = edtUserName.getText().toString().trim();
+        String mobile = edtMobile.getText().toString().trim(); // 🔥 NEW
 
         ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMessage("Registering...");
@@ -143,8 +152,25 @@ public class RegisterActivity extends AppCompatActivity
                     dialog.dismiss();
 
                     if (task.isSuccessful()) {
-                        new CustomToast(this, "Registration successful", "", true);
-                        makeRegister();
+
+                        String userId = mAuth.getCurrentUser().getUid();
+
+                        Map<String, Object> user = new HashMap<>();
+                        user.put("username", username);
+                        user.put("email", email);
+                        user.put("mobile", mobile); // 🔥 NEW
+
+                        db.collection("users")
+                                .document(userId)
+                                .set(user)
+                                .addOnSuccessListener(unused -> {
+                                    new CustomToast(this, "Registered Successfully ✅", "", true);
+                                    makeRegister();
+                                })
+                                .addOnFailureListener(e -> {
+                                    new CustomToast(this, "Firestore Error: " + e.getMessage(), "", false);
+                                });
+
                     } else {
                         new CustomToast(this,
                                 task.getException() != null
@@ -155,7 +181,6 @@ public class RegisterActivity extends AppCompatActivity
                 });
     }
 
-    // ✅ CLEAN NAVIGATION (NO PreferenceUtil)
     private void makeRegister() {
 
         if ("diagnosis".equalsIgnoreCase(targetJob)) {
@@ -187,6 +212,18 @@ public class RegisterActivity extends AppCompatActivity
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             new CustomToast(this, "Invalid email", "", false);
+            return false;
+        }
+
+        String mobile = edtMobile.getText().toString().trim();
+
+        if (TextUtils.isEmpty(mobile)) {
+            new CustomToast(this, "Enter mobile number", "", false);
+            return false;
+        }
+
+        if (mobile.length() != 10) {
+            new CustomToast(this, "Enter valid 10-digit mobile number", "", false);
             return false;
         }
 

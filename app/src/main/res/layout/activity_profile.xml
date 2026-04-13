@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        style="@style/custom_AppTheme.Toolbar" />
+
+    <!-- Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="@color/colorGrayLight">
+
+        <!-- 🔥 USERNAME -->
+        <TextView
+            android:id="@+id/txtName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="👤 Name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="40dp"/>
+
+        <!-- 🔥 EMAIL -->
+        <TextView
+            android:id="@+id/txtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📧 Email"
+            android:textSize="16sp"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="12dp"/>
+
+        <!-- 🔥 MOBILE -->
+        <TextView
+            android:id="@+id/txtMobile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📱 Mobile"
+            android:textSize="16sp"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="8dp"/>
+
+        <!-- 🔥 EDIT PROFILE BUTTON -->
+        <Button
+            android:id="@+id/btnEditProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center_horizontal"
+            android:minWidth="180dp"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:background="@drawable/round_transparent_background_selector"
+            android:text="EDIT PROFILE"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"/>
+
+        <!-- 🔥 LOGIN BUTTON -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="40dp"
+            android:layout_gravity="center_horizontal"
+            android:minWidth="180dp"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:background="@drawable/round_transparent_background_selector"
+            android:text="LOGIN"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"/>
+
+        <!-- 🔥 SIGNUP BUTTON -->
+        <Button
+            android:id="@+id/btnSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal"
+            android:minWidth="180dp"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:background="@drawable/round_transparent_background_selector"
+            android:text="SIGN UP"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"/>
+
+        <!-- 🔥 LOGOUT BUTTON -->
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="40dp"
+            android:layout_gravity="center_horizontal"
+            android:minWidth="180dp"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:background="@drawable/round_transparent_background_selector"
+            android:text="LOGOUT"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+</LinearLayout>

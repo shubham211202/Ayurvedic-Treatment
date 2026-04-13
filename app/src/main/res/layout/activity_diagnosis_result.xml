@@ -55,16 +55,28 @@
                 android:text="You are affected by Appendicites"/>
 
             <Button
+                android:id="@+id/btnSave"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginTop="56dp"
-                android:textColor="@color/colorPrimary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textAllCaps="true"
                 android:background="@drawable/round_transparent_background_selector"
                 android:text="SAVE FOR PRESCRIPTION"
-                android:id="@+id/btnSave" />
+                android:textAllCaps="true"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnViewSaved"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_transparent_background_selector"
+                android:text="VIEW SAVED PRESCRIPTIONS"
+                android:textAllCaps="true"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

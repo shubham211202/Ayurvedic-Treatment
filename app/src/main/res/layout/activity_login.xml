@@ -6,6 +6,7 @@
     android:focusableInTouchMode="true"
     android:fitsSystemWindows="true">
 
+    <!-- TOOLBAR -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
@@ -25,6 +26,7 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <!-- MAIN CONTENT -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -32,6 +34,7 @@
         android:padding="16dp"
         android:orientation="vertical">
 
+        <!-- TITLE -->
         <TextView
             android:id="@+id/txtOptional"
             android:layout_width="match_parent"
@@ -42,6 +45,7 @@
             android:textColor="@color/colorBlack"
             android:text="Welcome to\nAyurvedic Treatment"/>
 
+        <!-- USERNAME -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="44dp"
@@ -56,6 +60,7 @@
                 android:id="@+id/txtUserName" />
 
             <EditText
+                android:id="@+id/edtUserName"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/round_white_background"
@@ -64,11 +69,10 @@
                 android:textColor="@color/colorBlack"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:hint="Type user name"
-                android:id="@+id/edtUserName" />
-
+                android:hint="Type user name" />
         </LinearLayout>
 
+        <!-- PASSWORD -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="44dp"
@@ -83,6 +87,7 @@
                 android:id="@+id/txtPassword" />
 
             <EditText
+                android:id="@+id/edtPassword"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/round_white_background"
@@ -91,73 +96,67 @@
                 android:textColor="@color/colorBlack"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:hint="Type password"
-                android:id="@+id/edtPassword" />
-
+                android:hint="Type password" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- 🔥 LOGIN BUTTON -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center_horizontal"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:background="@drawable/round_transparent_background_selector"
+            android:text="LOGIN"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+        <!-- 🔥 FORGOT PASSWORD -->
+        <TextView
+            android:id="@+id/txtForgotPassword"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:weightSum="1"
-            android:orientation="horizontal">
+            android:layout_marginTop="12dp"
+            android:layout_gravity="center_horizontal"
+            android:text="Forgot Password?"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:textSize="14sp"/>
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".5"/>
-
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".5"
-                android:textColor="@color/colorPrimary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textAllCaps="true"
-                android:background="@drawable/round_transparent_background_selector"
-                android:text="Login"
-                android:id="@+id/btnLogin" />
-
-        </LinearLayout>
-
-
+        <!-- REGISTER SECTION -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:gravity="bottom">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/txtRegister"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:orientation="vertical">
+                android:layout_gravity="center_horizontal"
+                android:text="Not registered yet?"
+                android:textSize="12sp"
+                android:textColor="@color/colorBlack" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Not registered yet?"
-                    android:textSize="12sp"
-                    android:textColor="@color/colorBlack"
-                    android:id="@+id/txtRegister" />
-
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textAllCaps="true"
-                    android:background="@drawable/round_transparent_background_selector"
-                    android:text="Register Now"
-                    android:id="@+id/btnRegister" />
-            </LinearLayout>
-
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center_horizontal"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:background="@drawable/round_transparent_background_selector"
+                android:text="REGISTER NOW"
+                android:textAllCaps="true"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
         </LinearLayout>
-
 
     </LinearLayout>
 

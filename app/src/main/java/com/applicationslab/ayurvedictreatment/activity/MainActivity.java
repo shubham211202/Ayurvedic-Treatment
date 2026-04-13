@@ -1,9 +1,13 @@
 package com.applicationslab.ayurvedictreatment.activity;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -16,7 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.applicationslab.ayurvedictreatment.R;
 import com.applicationslab.ayurvedictreatment.adapter.OptionsAdapter;
 import com.applicationslab.ayurvedictreatment.datamodel.OptionsData;
-import com.google.firebase.FirebaseApp;   // ✅ IMPORTANT IMPORT
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // ✅ Safe Firebase Initialization (Prevents crash)
+        // ✅ Safe Firebase Initialization
         List<FirebaseApp> firebaseApps = FirebaseApp.getApps(this);
-        if (firebaseApps == null || firebaseApps.isEmpty()) {
+        if (firebaseApps.isEmpty()) {
             FirebaseApp.initializeApp(this);
         }
 
@@ -161,5 +166,51 @@ public class MainActivity extends AppCompatActivity {
         row.setDetails("About developer");
         row.setImageId(R.drawable.about_developer);
         optionsData.add(row);
+    }
+
+    // 🔥 SHOW PROFILE ICON
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    // 🔥 PROFILE DROPDOWN
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.action_profile) {
+
+            // 🔥 THIS IS THE FIX (RIGHT SIDE ANCHOR)
+            View anchor = findViewById(R.id.action_profile);
+
+            PopupMenu popup = new PopupMenu(this, anchor);
+            popup.getMenuInflater().inflate(R.menu.profile_menu, popup.getMenu());
+
+            popup.setOnMenuItemClickListener(menuItem -> {
+
+                int id = menuItem.getItemId();
+
+                if (id == R.id.menu_profile) {
+                    startActivity(new Intent(this, ProfileActivity.class));
+
+                } else if (id == R.id.menu_saved) {
+                    startActivity(new Intent(this, SavedPrescriptionsActivity.class));
+
+                } else if (id == R.id.menu_logout) {
+
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(this, LoginActivity.class));
+                    finish();
+                }
+
+                return true;
+            });
+
+            popup.show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

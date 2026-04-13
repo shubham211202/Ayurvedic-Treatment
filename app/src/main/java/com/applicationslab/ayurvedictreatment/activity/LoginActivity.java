@@ -25,17 +25,19 @@ import com.applicationslab.ayurvedictreatment.R;
 import com.applicationslab.ayurvedictreatment.utility.UtilityMethod;
 import com.applicationslab.ayurvedictreatment.widget.CustomToast;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity
         implements View.OnClickListener, TextView.OnEditorActionListener {
 
-    private TextView txtOptional, txtUserName, txtPassword, txtRegister;
+    private TextView txtOptional, txtUserName, txtPassword, txtRegister, txtForgotPassword;
     private EditText edtUserName, edtPassword;
     private Button btnLogin, btnRegister;
 
     private String targetJob = "";
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +45,13 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         initData();
         initView();
         setUIClickHandler();
     }
 
-    // ✅ FIXED: Safe intent handling
     private void initData() {
         if (getIntent() != null && getIntent().getExtras() != null) {
             targetJob = getIntent().getExtras().getString("target_job", "");
@@ -72,6 +74,7 @@ public class LoginActivity extends AppCompatActivity
         txtUserName = findViewById(R.id.txtUserName);
         txtPassword = findViewById(R.id.txtPassword);
         txtRegister = findViewById(R.id.txtRegister);
+        txtForgotPassword = findViewById(R.id.txtForgotPassword);
 
         edtUserName = findViewById(R.id.edtUserName);
         edtPassword = findViewById(R.id.edtPassword);
@@ -85,6 +88,7 @@ public class LoginActivity extends AppCompatActivity
         txtUserName.setTypeface(tf);
         txtPassword.setTypeface(tf);
         txtRegister.setTypeface(tf);
+        txtForgotPassword.setTypeface(tf, Typeface.BOLD);
 
         edtUserName.setTypeface(tf);
         edtPassword.setTypeface(tf);
@@ -96,6 +100,7 @@ public class LoginActivity extends AppCompatActivity
     private void setUIClickHandler() {
         btnLogin.setOnClickListener(this);
         btnRegister.setOnClickListener(this);
+        txtForgotPassword.setOnClickListener(v -> sendPasswordReset());
         edtPassword.setOnEditorActionListener(this);
     }
 
@@ -126,10 +131,41 @@ public class LoginActivity extends AppCompatActivity
         return super.dispatchTouchEvent(event);
     }
 
-    // ✅ FIREBASE LOGIN
-    private void loginWithFirebase() {
+    // 🔥 FORGOT PASSWORD
+    private void sendPasswordReset() {
 
         String email = edtUserName.getText().toString().trim();
+
+        if (TextUtils.isEmpty(email)) {
+            new CustomToast(this, "Enter your email first", "", false);
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            new CustomToast(this, "Enter valid email", "", false);
+            return;
+        }
+
+        ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage("Sending reset link...");
+        dialog.setCancelable(false);
+        dialog.show();
+
+        mAuth.sendPasswordResetEmail(email)
+                .addOnSuccessListener(unused -> {
+                    dialog.dismiss();
+                    new CustomToast(this, "Reset link sent ✅", "", true);
+                })
+                .addOnFailureListener(e -> {
+                    dialog.dismiss();
+                    new CustomToast(this, "Error: " + e.getMessage(), "", false);
+                });
+    }
+
+    // 🔥 LOGIN (USERNAME OR EMAIL)
+    private void loginWithFirebase() {
+
+        String input = edtUserName.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
 
         ProgressDialog dialog = new ProgressDialog(this);
@@ -137,19 +173,58 @@ public class LoginActivity extends AppCompatActivity
         dialog.setCancelable(false);
         dialog.show();
 
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    dialog.dismiss();
+        // EMAIL LOGIN
+        if (Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
 
-                    if (task.isSuccessful()) {
-                        makeLogin();
-                    } else {
-                        new CustomToast(this, "Invalid email or password", "", false);
-                    }
-                });
+            mAuth.signInWithEmailAndPassword(input, password)
+                    .addOnCompleteListener(this, task -> {
+                        dialog.dismiss();
+
+                        if (task.isSuccessful()) {
+                            makeLogin();
+                        } else {
+                            new CustomToast(this, "Invalid email or password ❌", "", false);
+                        }
+                    });
+
+        } else {
+
+            // USERNAME LOGIN
+            db.collection("users")
+                    .whereEqualTo("username", input)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+
+                        if (queryDocumentSnapshots.isEmpty()) {
+                            dialog.dismiss();
+                            new CustomToast(this, "User doesn't exist ❌", "", false);
+                            return;
+                        }
+
+                        String email = queryDocumentSnapshots
+                                .getDocuments()
+                                .get(0)
+                                .getString("email");
+
+                        mAuth.signInWithEmailAndPassword(email, password)
+                                .addOnCompleteListener(this, task -> {
+                                    dialog.dismiss();
+
+                                    if (task.isSuccessful()) {
+                                        makeLogin();
+                                    } else {
+                                        new CustomToast(this, "Invalid password ❌", "", false);
+                                    }
+                                });
+
+                    })
+                    .addOnFailureListener(e -> {
+                        dialog.dismiss();
+                        new CustomToast(this, "Error: " + e.getMessage(), "", false);
+                    });
+        }
     }
 
-    // ✅ CLEANED LOGIN FLOW (NO PreferenceUtil)
     private void makeLogin() {
 
         if ("diagnosis".equalsIgnoreCase(targetJob)) {
@@ -159,7 +234,6 @@ public class LoginActivity extends AppCompatActivity
             startActivity(new Intent(this, PrescriptionRequestActivity.class));
 
         } else {
-            // default flow
             startActivity(new Intent(this, MainActivity.class));
         }
 
@@ -168,15 +242,10 @@ public class LoginActivity extends AppCompatActivity
 
     private boolean isInputValid() {
 
-        String email = edtUserName.getText().toString().trim();
+        String input = edtUserName.getText().toString().trim();
 
-        if (TextUtils.isEmpty(email)) {
-            new CustomToast(this, "Email required", "", false);
-            return false;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            new CustomToast(this, "Enter valid email", "", false);
+        if (TextUtils.isEmpty(input)) {
+            new CustomToast(this, "Enter username or email", "", false);
             return false;
         }
 

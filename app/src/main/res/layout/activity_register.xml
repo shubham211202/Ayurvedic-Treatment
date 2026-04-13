@@ -32,6 +32,7 @@
         android:padding="16dp"
         android:orientation="vertical">
 
+        <!-- USERNAME -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="44dp"
@@ -46,6 +47,7 @@
                 android:id="@+id/txtUserName" />
 
             <EditText
+                android:id="@+id/edtUserName"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/round_white_background"
@@ -54,11 +56,10 @@
                 android:textColor="@color/colorBlack"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:hint="Type user name"
-                android:id="@+id/edtUserName" />
-
+                android:hint="Type user name" />
         </LinearLayout>
 
+        <!-- EMAIL -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="44dp"
@@ -73,6 +74,7 @@
                 android:id="@+id/txtEmail" />
 
             <EditText
+                android:id="@+id/edtEmail"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/round_white_background"
@@ -81,11 +83,36 @@
                 android:textColor="@color/colorBlack"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:hint="Type email address"
-                android:id="@+id/edtEmail" />
-
+                android:hint="Type email address" />
         </LinearLayout>
 
+        <!-- 🔥 MOBILE (NEW - SAME UI STYLE) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="Mobile" />
+
+            <EditText
+                android:id="@+id/edtMobile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/round_white_background"
+                android:inputType="phone"
+                android:imeOptions="actionNext"
+                android:textColor="@color/colorBlack"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:hint="Enter mobile number" />
+        </LinearLayout>
+
+        <!-- PASSWORD -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="44dp"
@@ -100,6 +127,7 @@
                 android:id="@+id/txtPassword" />
 
             <EditText
+                android:id="@+id/edtPassword"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/round_white_background"
@@ -108,11 +136,10 @@
                 android:textColor="@color/colorBlack"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:hint="Type password"
-                android:id="@+id/edtPassword" />
-
+                android:hint="Type password" />
         </LinearLayout>
 
+        <!-- CONFIRM PASSWORD -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="44dp"
@@ -127,6 +154,7 @@
                 android:id="@+id/txtConfirmPass" />
 
             <EditText
+                android:id="@+id/edtConfirmPass"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/round_white_background"
@@ -135,17 +163,17 @@
                 android:textColor="@color/colorBlack"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:hint="Type password again"
-                android:id="@+id/edtConfirmPass" />
-
+                android:hint="Type password again" />
         </LinearLayout>
 
+        <!-- SUBMIT BUTTON -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/btnSubmit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -154,11 +182,9 @@
                 android:textStyle="bold"
                 android:textAllCaps="true"
                 android:background="@drawable/round_transparent_background_selector"
-                android:text="Submit"
-                android:id="@+id/btnSubmit" />
+                android:text="Submit" />
 
         </LinearLayout>
-
 
     </LinearLayout>
 
